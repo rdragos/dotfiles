@@ -1,0 +1,55 @@
+syntax on
+colorscheme zenburn
+set t_Co=256
+
+set cindent
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
+set number
+set backspace=indent,eol,start
+set expandtab
+set showmatch
+
+imap <F2> <ESC>:w<CR>
+nmap <F2> <ESC>:w<CR>
+
+map <F3> :tabprev <CR>
+map <F4> :tabnext <CR>
+
+imap <F3> <ESC> :tabprev <CR>i
+imap <F4> <ESC> :tabnext <CR>i
+
+function! Timer(program)
+    execute "!/usr/bin/time -p \"" . expand(a:program) . "\""
+endfunction
+
+function! TimerNoExpand(program)
+    execute "!/usr/bin/time -p " . a:program
+endfunction
+
+" C/C++ compilation
+autocmd FileType c setlocal makeprg=clang\ -g\ -O2\ -Wall\ -Wextra\ %\ -o\ %<\ -lm
+autocmd FileType cpp setlocal makeprg=g++\ -O2\ -Wall\ -static\ %\ -lm\ -std=c++0x\ -o\ %<
+
+autocmd FileType c,cpp map <buffer> <F5> :make!<CR>
+autocmd FileType c,cpp imap <buffer> <F5> <ESC>:make!<CR>
+
+
+" Ocaml Compilation
+autocmd FileType ocaml setlocal makeprg=ocamlopt\ -o\ %<\ str.cmxa\ nums.cmxa\ %
+autocmd FileType ocaml map <buffer> <F5> :make!<CR>
+autocmd FileType ocaml imap <buffer> <F5> <ESC>:make!<CR>
+
+" Running Ocaml
+autocmd FileType ocaml map <buffer> <F9> :call Timer("./%<")<CR>
+
+" Running Python
+autocmd FileType python map <buffer> <F9> :call TimerNoExpand("python3 %")<CR>
+
+" Running C/C++
+autocmd FileType c,cpp map <buffer> <F9> :call Timer("./%<")<cr>
+
+" No more compiler errors with sytastic plugin
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = ' -std=c++11 -stdlib=libc++'
